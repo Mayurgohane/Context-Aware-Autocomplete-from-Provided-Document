@@ -5,3 +5,4 @@ sentence-transformers
 groq
 python-dotenv
 PyPDF2
+openai==0.28
