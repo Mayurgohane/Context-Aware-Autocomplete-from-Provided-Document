@@ -2,11 +2,11 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-# Load embedding model
+
 embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# FAISS index (in-memory for simplicity)
-dimension = 384  # Model output size
+
+dimension = 384  
 index = faiss.IndexFlatL2(dimension)
 
 stored_sentences = []
