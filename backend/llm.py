@@ -1,12 +1,19 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
+import os
+import groq
+from dotenv import load_dotenv
 
-# Load LLaMA model
-model_name = "meta-llama/Llama-2-7b-chat-hf"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+# Load API key from .env file
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# Initialize Groq client
+client = groq.Groq(api_key=GROQ_API_KEY)
 
 def enhance_with_llm(prompt: str) -> str:
-    """Generates an improved autocomplete suggestion using LLaMA."""
-    input_tokens = tokenizer(prompt, return_tensors="pt")
-    output = model.generate(**input_tokens, max_length=50)
-    return tokenizer.decode(output[0], skip_special_tokens=True)
+    """Generates an autocomplete suggestion using LLaMA-2 via Groq API."""
+    response = client.chat.completions.create(
+        model="llama2-70b-chat",  # Use "mixtral-8x7b" if you prefer Mixtral
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=50
+    )
+    return response.choices[0].message.content

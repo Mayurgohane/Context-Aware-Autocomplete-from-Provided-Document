@@ -1,9 +1,6 @@
 streamlit
-fastapi
-uvicorn
 pypdf
-langchain
-sentence-transformers
 faiss-cpu
-transformers
-torch
+sentence-transformers
+groq
+python-dotenv

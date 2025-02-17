@@ -3,24 +3,26 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 # Load embedding model
-embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# FAISS Index
+# FAISS index (in-memory for simplicity)
 dimension = 384  # Model output size
-faiss_index = faiss.IndexFlatL2(dimension)
-sentences = []  # Store sentences from PDF
+index = faiss.IndexFlatL2(dimension)
 
+stored_sentences = []
 
-def add_text_to_faiss(text: str):
-    """Splits text into sentences, generates embeddings, and stores in FAISS."""
-    global sentences
-    sentences = text.split(". ")  # Simple sentence segmentation
-    embeddings = embedding_model.encode(sentences)
-    faiss_index.add(np.array(embeddings))
+def index_document(text: str):
+    """Indexes a document into FAISS."""
+    global stored_sentences
+    sentences = text.split(". ")
+    stored_sentences.extend(sentences)
+    
+    embeddings = embedding_model.encode(sentences, convert_to_numpy=True)
+    index.add(embeddings)
 
-
-def get_similar_sentences(query: str, top_k: int = 3):
-    """Retrieves top-k most relevant sentences based on similarity."""
-    query_embedding = embedding_model.encode([query])
-    distances, indices = faiss_index.search(np.array(query_embedding), top_k)
-    return [sentences[idx] for idx in indices[0] if idx < len(sentences)]
+def search_faiss(query: str, top_k: int = 3):
+    """Retrieves top-k relevant sentences from FAISS."""
+    query_embedding = embedding_model.encode([query], convert_to_numpy=True)
+    distances, indices = index.search(query_embedding, top_k)
+    
+    return [stored_sentences[i] for i in indices[0] if i < len(stored_sentences)]
