@@ -17,7 +17,7 @@ def enhance_with_llm(prompt: str) -> str:
                 {"role": "system", "content": "You are an AI model designed to assist with context-aware autocomplete suggestions based on provided documents."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=80
+            max_tokens=50
         )
         return response['choices'][0]['message']['content']
     except Exception as e:
